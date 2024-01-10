@@ -1,17 +1,18 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from PIL import Image
 import matplotlib.pyplot as plt
+import seaborn as sns
+import pickle
+
+from PIL import Image
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 # from pandas_profiling import ProfileReport
 # from streamlit_pandas_profiling import st_profile_report
-import seaborn as sns
-import pickle
 
 # Import model
-svm = pickle.load(open('SVC.pkl', 'rb'))
+knn = pickle.load(open('KNN_model.pkl', 'rb'))
 
 # Load dataset
 data = pd.read_csv('Heart Dataset.csv')
@@ -28,7 +29,7 @@ html_layout1 = """
 """
 st.markdown(html_layout1, unsafe_allow_html=True)
 
-activities = ['SVM', 'Model Lain']
+activities = ['KNN']
 option = st.sidebar.selectbox('Pilihan mu ?', activities)
 st.sidebar.header('Data Pasien')
 
@@ -56,13 +57,10 @@ if st.checkbox('EDa'):
 # Train test split
 X_new = data[['age', 'sex', 'cp', 'trtbps', 'chol', 'fbs', 'restecg', 'thalachh', 'exng', 'oldpeak', 'slp', 'caa', 'thall']]
 y_new = data['output']
-X = data.drop('output', axis=1)
-y = data['output']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
 X_train, X_test, y_train, y_test = train_test_split(X_new, y_new, test_size=0.20, random_state=42)
-svm.fit(X_train, y_train)
+knn.fit(X_train, y_train)
 # SIMPAN MODEL BARU
-pickle.dump(svm, open('SVC_update.pkl', 'wb'))
+pickle.dump(knn, open('KNN_update.pkl', 'wb'))
 
 # Training Data
 if st.checkbox('Train-Test Dataset'):
@@ -79,14 +77,14 @@ if st.checkbox('Train-Test Dataset'):
     st.write(y_test.shape)
 
 def user_report():
-    age = st.sidebar.slider('Umur', 0, 100, 1)
-    sex = st.sidebar.slider('Jenis Kelamin', 0, 1, 0)
+    age = st.sidebar.slider('Umur', 1, 100, 20)
+    sex = st.sidebar.slider('Jenis Kelamin', 0, 1, 1)
     cp = st.sidebar.slider('Nyeri Dada', 0, 3, 0)
-    trtbps = st.sidebar.slider('Tekanan Darah', 0, 500, 50)
-    chol = st.sidebar.slider('Kolestrol', 0, 500, 50)
+    trtbps = st.sidebar.slider('Tekanan Darah', 0, 500, 120)
+    chol = st.sidebar.slider('Kolestrol', 0, 500, 200)
     fbs = st.sidebar.slider('Gula Darah', 0, 1, 0)
     restecg = st.sidebar.slider('Resting Electrocardiographic', 0, 1, 0)
-    thalachh = st.sidebar.slider('Denyut Jantung Maksimal', 0, 500, 50)
+    thalachh = st.sidebar.slider('Denyut Jantung Maksimal', 0, 500, 90)
     exng = st.sidebar.slider('Angina', 0, 1, 0)
     oldpeak = st.sidebar.slider('Oldpeak', 0, 10, 1)
     slp = st.sidebar.slider('Kemiringan segmen ST latihan', 0, 2, 0)
@@ -116,8 +114,8 @@ user_data = user_report()
 st.subheader('Data Pasien')
 st.write(user_data)
 
-user_result = svm.predict(user_data)
-svc_score = accuracy_score(y_test, svm.predict(X_test))
+user_result = knn.predict(user_data)
+knn_score = accuracy_score(y_test, knn.predict(X_test))
 
 # Output
 st.subheader('Hasilnya adalah : ')
@@ -129,4 +127,4 @@ else:
 st.title(output)
 st.subheader('Model yang digunakan : \n' + option)
 st.subheader('Accuracy : ')
-st.write(str(svc_score * 100) + '%')
+st.write(str(knn_score * 100) + '%')
