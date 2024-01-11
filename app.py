@@ -46,13 +46,13 @@ if st.checkbox("Tentang Dataset"):
 
 sns.set_style('darkgrid')
 
-if st.checkbox('EDa'):
-    pr = ProfileReport(data, explorative=True)
-    st.header('**Input Dataframe**')
-    st.write(data)
-    st.write('---')
-    st.header('**Profiling Report**')
-    st_profile_report(pr)
+# if st.checkbox('EDa'):
+#     pr = ProfileReport(data, explorative=True)
+#     st.header('**Input Dataframe**')
+#     st.write(data)
+#     st.write('---')
+#     st.header('**Profiling Report**')
+#     st_profile_report(pr)
 
 # Train test split
 X_new = data[['age', 'sex', 'cp', 'trtbps', 'chol', 'fbs', 'restecg', 'thalachh', 'exng', 'oldpeak', 'slp', 'caa', 'thall']]
